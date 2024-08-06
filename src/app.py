@@ -20,5 +20,7 @@ class App:
             
             if not cont:
                 break
+        
+        Gui().clear
             
             

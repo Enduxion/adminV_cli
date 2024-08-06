@@ -9,6 +9,7 @@ class BasePage:
         self.err = partial(self.gui.colored, color="_ec")
         self.acc = partial(self.gui.colored, color="_ac")
         self.bold = partial(self.gui.styled, style="bold")
+        self.corr = partial(self.gui.colored, color="_cc")
 
     def run(self):
         raise NotImplementedError("Run has to be implemented")

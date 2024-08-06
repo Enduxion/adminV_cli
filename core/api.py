@@ -63,22 +63,40 @@ class Api:
         if new_username != username and new_username in all_users:
             return False
         
-        if username in  all_users:
+        if username in all_users:
             data = all_users[username]
             del all_users[username]
             all_users[new_username] = data
             
-        json_enc_data = self._cypher_suite.encrypt(json.dumps(all_users).encode())
+        try:
+            json_enc_data = self._cypher_suite.encrypt(json.dumps(all_users).encode())
             
-        ## change the username in the dat file
-        with open(os.path.join(self._sys_path, "usrdata.dat"), 'wb') as data_file:
-            data_file.write(json_enc_data)
-        
-        ## change the exp folder name
-        usr_path = os.path.join("disk", "usr")
-        os.rename(os.path.join(usr_path, username), os.path.join(usr_path, new_username))
+            ## change the username in the dat file
+            with open(os.path.join(self._sys_path, "usrdata.dat"), 'wb') as data_file:
+                data_file.write(json_enc_data)
+            
+            ## change the exp folder name
+            usr_path = os.path.join("disk", "usr")
+            os.rename(os.path.join(usr_path, username), os.path.join(usr_path, new_username))
+        except Exception:
+            return False
+
         return True
     
-print(Api().load_user_data())
-Api().change_username("pawan", "endux")
-print(Api().load_user_data())
+    def change_password(self, username, new_password):
+        all_users = self.load_user_data()
+        
+        if username in all_users:
+            all_users[username]["password"] = new_password
+        else: return False
+            
+        try:
+            json_enc_data = self._cypher_suite.encrypt(json.dumps(all_users).encode())
+            
+            ## change the password in the dat file
+            with open(os.path.join(self._sys_path, "usrdata.dat"), 'wb') as data_file:
+                data_file.write(json_enc_data)
+        except Exception:
+            return False
+            
+        return True
