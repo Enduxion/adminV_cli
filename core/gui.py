@@ -66,18 +66,16 @@ class Gui:
         return text
     
     def colored(self, text, color):
-        if color in Color.colors:
-            return f"{Color.colors[color]}{text}{Color.colors["reset"]}"
+        if color in self.color_settings:
+            return f"{self.color_settings[color]}{text}{Color.colors["reset"]}"
 
     @property
     def lis(self):
         old_settings = termios.tcgetattr(sys.stdin)
         try:
-            # Set terminal to raw mode
             tty.setraw(sys.stdin.fileno())
-            ch = sys.stdin.read(1)  # Read a single character
+            ch = sys.stdin.read(1)
         finally:
-            # Restore the old terminal settings
             termios.tcsetattr(sys.stdin, termios.TCSADRAIN, old_settings)
         return ch
     
@@ -86,3 +84,12 @@ class Gui:
             key: Color.colors[value]
             for key, value in userconfig["colors"].items()
         }
+        
+    def print_table(self, data: list[tuple[str, bool]], headers: tuple[str, str]):
+        data = [(username, "admin" if admin else "non-admin") for username, admin in data]
+        column_widths = [max(len(str(item[i])) for item in data + [headers]) for i in range(len(headers))]
+        row_format = "  ".join([f"{{:<{width}}}" for width in column_widths])
+        print(row_format.format(*headers))
+        print("  ".join(["-" * width for width in column_widths]))
+        for row in data:
+            print(row_format.format(*row))

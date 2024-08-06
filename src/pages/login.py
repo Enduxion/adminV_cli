@@ -26,6 +26,6 @@ class Login(BasePage):
             
             print(f"{self.gui.colored("Invalid credentials", "red")}\nPress 'q' to exit\nPress any key to continue")
 
-            if self.gui.lis().upper() == "Q":
+            if self.gui.lis.upper() == "Q":
                 return None
             

@@ -1,6 +1,9 @@
 from cryptography.fernet import Fernet
 import os
 import json
+import re
+
+PATT = r'^[A-Za-z]+$'
 
 class Api:
     _instance = None
@@ -39,3 +42,43 @@ class Api:
             if password == user_data[username]["password"]:
                 return { "username": username, "is_admin": user_data[username]["is_admin"] }
         return None
+    
+    def all_users(self):
+        user_data = self.load_user_data()
+        new_user_data = []
+        
+        for keys in user_data:
+            new_user_data.append((keys, user_data[keys]["is_admin"]))
+            
+        return new_user_data
+        
+    def change_username(self, username, new_username):
+        all_users = self.load_user_data()
+        
+        if not re.search(PATT, new_username):
+            return False
+        if len(new_username) < 4 or len(new_username) > 10:
+            return False
+        
+        if new_username != username and new_username in all_users:
+            return False
+        
+        if username in  all_users:
+            data = all_users[username]
+            del all_users[username]
+            all_users[new_username] = data
+            
+        json_enc_data = self._cypher_suite.encrypt(json.dumps(all_users).encode())
+            
+        ## change the username in the dat file
+        with open(os.path.join(self._sys_path, "usrdata.dat"), 'wb') as data_file:
+            data_file.write(json_enc_data)
+        
+        ## change the exp folder name
+        usr_path = os.path.join("disk", "usr")
+        os.rename(os.path.join(usr_path, username), os.path.join(usr_path, new_username))
+        return True
+    
+print(Api().load_user_data())
+Api().change_username("pawan", "endux")
+print(Api().load_user_data())

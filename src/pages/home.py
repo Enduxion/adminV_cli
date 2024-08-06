@@ -1,4 +1,5 @@
 from core.base_page import BasePage
+from src.pages.settings import Settings
 class Home(BasePage):
     def __init__(self):
         super().__init__()
@@ -39,7 +40,6 @@ class Home(BasePage):
                 # TODO: make restart
                 pass
             elif dec == "s":
-                # TODO: settings
-                pass
+                Settings().run()
             elif dec == "a":
                 pass
