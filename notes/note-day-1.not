@@ -1,0 +1,5 @@
+Continue from admin_settings
+	-add change is_admin
+	-add "add user"
+	-add remove user
+	-other settings

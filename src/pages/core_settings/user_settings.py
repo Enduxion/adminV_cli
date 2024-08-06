@@ -58,7 +58,7 @@ class UserSettings(BasePage):
                 break
             
             print(f"{self.corr(f"Username successfully changed from {self.bold(self.state.user.username)} to {self.bold(new_username)}")}")
-            self.state.set_user(new_username, self.state.user.id_admin)
+            self.state.set_user(new_username, self.state.user.is_admin)
             print("Press any key to continue")
             self.gui.lis
             break

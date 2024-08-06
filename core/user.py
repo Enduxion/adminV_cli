@@ -3,4 +3,4 @@ from dataclasses import dataclass
 @dataclass
 class User:
     username: str
-    id_admin: bool
+    is_admin: bool
