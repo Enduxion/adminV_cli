@@ -118,9 +118,41 @@ class AdminSettings(BasePage):
             if dec == 'n':
                 break
             
+            all_users = Api().load_user_data()
+            
             self.gui.print_table(Api().all_users(), ("Username", "Admin"))
             
-    
+            new_username = input(self.acc("Name of the user you want to change the permission of: "))
+            
+            if new_username == self.state.user.username:
+                print(self.err("Can't change your own permission!"))
+                self.gui.lis
+                break
+            
+            if new_username not in all_users:
+                print(self.err("Username not found!"))
+                self.gui.lis
+                break
+            
+            admin_vals = ("non-admin", "admin")
+            admin_val = all_users[new_username]["is_admin"]
+            
+            print(f"Do you want to change the permission of {new_username} from {admin_vals[admin_val]} to {admin_vals[not admin_val]}? (y/n)")
+            
+            if self.gui.lis.lower == 'n':
+                break
+            
+            is_changed = Api().change_permission(new_username)
+            
+            if not is_changed:
+                print(self.err(f"Couldn't change the permission of {self.bold(new_username)}"))
+                self.gui.lis
+                break
+            
+            print(self.corr(f"Successfully changed the permission of {self.bold(new_username)} to {self.bold(admin_vals[not admin_val])}"))
+            self.gui.lis
+            break
+            
     def run(self):
         self.gui.clear
         if not self.state.user.is_admin:

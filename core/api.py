@@ -185,4 +185,37 @@ class Api:
             return False
         
         return True
+    
+    def change_permission(self, username):
+        all_users = self.load_user_data()
         
+        if username not in all_users:
+            return False
+        
+        admin_count = 0
+        
+        for key, val in all_users.items():
+            if val["is_admin"]: admin_count += 1
+            if admin_count > 1: break
+            
+        if admin_count < 2 and all_users[username]["is_admin"]:
+            print("Can't change the permission of the only admin!")
+            return False
+        
+        print("Changing the permission")
+        all_users[username]["is_admin"] = not all_users[username]["is_admin"]
+        print("Success...")
+        
+        try:
+            print("Encrypting data")
+            json_enc_data = self._cypher_suite.encrypt(json.dumps(all_users).encode())
+            print("Success...")
+            
+            print("Saving data")
+            with open(os.path.join(self._sys_path, "usrdata.dat"), "wb") as data_file:
+                data_file.write(json_enc_data)
+            print("Success...")
+        except Exception:
+            return False
+        
+        return True
