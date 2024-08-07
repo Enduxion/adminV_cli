@@ -1,0 +1,9 @@
+Continue in themes:
+    - add default schematics
+    - add change colors
+    - if possible add background color change
+
+Completed:
+    settings:
+        - admin_settings
+        - user_settings
