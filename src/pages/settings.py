@@ -1,5 +1,5 @@
 from core.base_page import BasePage
-from src.pages.core_settings import user_settings as setting
+from src.pages.core_settings import user_settings, admin_settings
 
 class Settings(BasePage):
     def __init__(self):
@@ -49,7 +49,6 @@ class Settings(BasePage):
                 # TODO: make theme
                 pass
             elif dec == "a":
-                # TODO: make admin
-                pass
+                admin_settings.AdminSettings().run()
             elif dec == "u":
-                setting.UserSettings().run()
+                user_settings.UserSettings().run()

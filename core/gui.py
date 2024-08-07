@@ -1,6 +1,13 @@
 import os, tty, termios, sys
 
 class Color:
+    default = {
+        "_fc": '\033[37m',
+        "_bc": '\033[30m',
+        "_ec": '\033[31m',
+        "_cc": '\033[32m',
+        "_ac": '\033[33m',
+    }
     colors = {
         "black": '\033[30m',
         "red": '\033[31m',
@@ -30,7 +37,7 @@ class Decor:
         "italic": ('\033[3m', '\033[23m'),
         "underline": ('\033[4m', '\033[24m'),
         "blink": ('\033[5m', '\033[25m'),
-        "reset_all": ('\033[0m',)
+        "reset_all": ('\033[0m')
     }
 
 class Gui:
@@ -67,7 +74,7 @@ class Gui:
     
     def colored(self, text, color):
         if color in self.color_settings:
-            return f"{self.color_settings[color]}{text}{Color.colors["reset"]}"
+            return f"{self.color_settings[color]}{text}{self.color_settings['_fc']}"
 
     @property
     def lis(self):
@@ -84,6 +91,7 @@ class Gui:
             key: Color.colors[value]
             for key, value in userconfig["colors"].items()
         }
+        print(self.color_settings['_fc'])
         
     def print_table(self, data: list[tuple[str, bool]], headers: tuple[str, str]):
         data = [(username, "admin" if admin else "non-admin") for username, admin in data]
@@ -93,3 +101,8 @@ class Gui:
         print("  ".join(["-" * width for width in column_widths]))
         for row in data:
             print(row_format.format(*row))
+    
+    @property
+    def reset(self):
+        self.color_settings = Color.default
+        print(Color.colors["reset"], Color.colors["bg_reset"], Decor.styles["reset_all"][0])

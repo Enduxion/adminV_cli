@@ -8,6 +8,7 @@ class App:
 
     def run(self):
         while True:
+            print(Gui().reset)
             user = Login().run()
 
             if user is None:
@@ -22,5 +23,6 @@ class App:
                 break
         
         Gui().clear
+        Gui().reset
             
             

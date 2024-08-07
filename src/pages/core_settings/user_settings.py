@@ -51,7 +51,7 @@ class UserSettings(BasePage):
             if not is_changed:
                 print(f"Couldn't change the username.\nEnter {self.bold("h")} to see potential reason")
                 deci = self.gui.lis.lower()
-                if deci == "r":
+                if deci == "h":
                     self.gui.clear
                     print(f"Username can't be {self.bold("admin")}\nUsername can't be {self.bold("already in use")}\nUsername can only be {self.bold("alphabetic")}")
                     self.gui.lis

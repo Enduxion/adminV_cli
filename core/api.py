@@ -100,3 +100,89 @@ class Api:
             return False
             
         return True
+    
+    def add_user(self, username, password, is_admin):
+        all_users = self.load_user_data()
+        
+        if not re.search(PATT, username):
+            print("Invalid username")
+            return False
+        if len(username) < 4 or len(username) > 10:
+            print("Invalid length of the username")
+            return False
+        
+        if username in all_users:
+            print("Username already in use")
+            return False
+        
+        print("Adding username in the list...")
+        all_users[username] = { "password": password, "is_admin": is_admin }
+        print("Success...")
+        try:
+            print("Encrypting data")
+            json_enc_data = self._cypher_suite.encrypt(json.dumps(all_users).encode())
+            print("Success...")
+            
+            print("Saving data")
+            with open(os.path.join(self._sys_path, "usrdata.dat"), 'wb') as data_file:
+                data_file.write(json_enc_data)
+            print("Success...")                
+                
+            file_path = os.path.join("disk", "usr", username)
+            
+            print("making file dir")
+            os.makedirs(file_path)
+            print("Success...")
+            
+            print("Condifguring user settings")
+            os.system(f"cp {os.path.join("disk", "sys", "default_config.json")} {os.path.join(file_path, ".config")}")
+            print("Success...")
+        except Exception:
+            return False
+        
+        return True
+        
+    def remove_user(self, username):
+        all_users:dict[str, dict] = self.load_user_data()
+        
+        if username not in all_users:
+            print(f"No user by the username {username}")
+            return False
+        
+        is_current_user_admin = all_users[username]["is_admin"]
+        
+        admin_count = 0
+        
+        if is_current_user_admin:
+            for key, val in all_users.items():
+                if val["is_admin"]: admin_count += 1
+                if admin_count > 1: break
+                
+        if admin_count < 2 and is_current_user_admin:
+            print("Can't remove the only admin user!")
+            return False
+        
+        print("Removing user")
+        all_users.pop(username)
+        print("Success...")
+        
+        try:
+            print("Encrypting the data")
+            json_enc_data = self._cypher_suite.encrypt(json.dumps(all_users).encode())
+            print("Success...")
+            
+            print("Saving data")
+            with open(os.path.join(self._sys_path, "usrdata.dat"), 'wb') as data_file:
+                data_file.write(json_enc_data)
+            print("Success...")
+            
+            file_path = os.path.join("disk", "usr", username)
+            
+            print("Removing the data")
+            os.system(f"rm -r {file_path}")
+            print("Success...")
+        except Exception:
+            return False
+        
+        return True
+        

@@ -2,7 +2,7 @@
     "colors": {
         "_fc": "white",
         "_bc": "black",
-        "_ec": "green",
+        "_ec": "red",
         "_cc": "green",
         "_ac": "yellow"
     }
