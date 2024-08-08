@@ -31,6 +31,8 @@ class AdminSettings(BasePage):
             
             if dec == 'n':
                 break
+            elif dec != 'y':
+                continue
             
             self.gui.print_table(Api().all_users(), ("Username", "Admin"))
             
@@ -75,6 +77,8 @@ class AdminSettings(BasePage):
             dec = self.gui.lis.lower()
             if dec == 'n':
                 break
+            elif dec != 'y':
+                continue
             
             self.gui.print_table(Api().all_users(), ("Username", "Admin"))
 
@@ -93,10 +97,13 @@ class AdminSettings(BasePage):
                 break
             
             print("The user and all of their data will be removed", self.err(f"Do you really want to continue? (y/n)"), sep="\n")
-            dec2 = self.gui.lis.lower()
-            
-            if dec2 == 'n':
-                break
+            while True:
+                dec2 = self.gui.lis.lower()
+                
+                if dec2 == 'n':
+                    return
+                elif dec2 == 'y':
+                    break
             
             is_removed = Api().remove_user(new_username)
             
@@ -117,6 +124,8 @@ class AdminSettings(BasePage):
             
             if dec == 'n':
                 break
+            elif dec != 'y':
+                continue
             
             all_users = Api().load_user_data()
             

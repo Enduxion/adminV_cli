@@ -219,3 +219,47 @@ class Api:
             return False
         
         return True
+    
+    def reset_to_default(self, username):
+        all_users = self.load_user_data()
+        
+        if username not in all_users:
+            print(f"No user by the username {username}")
+            
+        try:
+            def_config = None
+            print("Reading default config")
+            with open(os.path.join(self._sys_path, "default_config.json"), "r") as data_file:
+                def_config = json.load(data_file)
+                (def_config)
+            print("Success...")
+            
+            print("Writing the new data")
+            with open(os.path.join("disk", "usr", username, ".config"), "w") as data_file_2:
+                data_file_2.write(json.dumps(def_config))
+                
+            print("Success...")    
+                
+        except Exception:
+            return False
+        
+        return True
+        
+    def change_theme(self, username, theme_key, color_name):
+        usr_config = None
+        color_key = f"_{theme_key.lower()}c"
+        try:
+            with open(os.path.join("disk", "usr", username, ".config") , "r") as data_file:
+                print("Loading the configuration")
+                usr_config = json.load(data_file)
+                print("Success...\nLoading the color to set")
+                usr_config["colors"][color_key] = color_name.lower()
+                print("Success...")
+            
+            with open(os.path.join("disk", "usr", username, ".config"), "w") as data_file:
+                print("Saving data")
+                data_file.write(json.dumps(usr_config))
+                print("Success...")
+            return True
+        except Exception:
+            return False

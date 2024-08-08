@@ -38,6 +38,8 @@ class UserSettings(BasePage):
             dec = self.gui.lis.lower()              
             if dec == "n":
                 break
+            elif dec != "y":
+                continue
             
             password = input(f"{self.acc("Verification\n")}Password for {self.bold(self.state.user.username)}: ")
             if not Api().is_logged_in(self.state.user.username, password):
@@ -70,6 +72,8 @@ class UserSettings(BasePage):
             dec = self.gui.lis.lower()
             if dec == "n":
                 break
+            elif dec != "y":
+                continue
             
             password = input(f"{self.acc("Verification\n")}Password for {self.bold(self.state.user.username)}: ")
             if not Api().is_logged_in(self.state.user.username, password):

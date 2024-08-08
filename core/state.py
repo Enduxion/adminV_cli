@@ -34,4 +34,5 @@ class State:
 
     @property
     def user_config(self):
+        self._load_user_config()
         return self._user_config
