@@ -55,7 +55,7 @@ class UserSettings(BasePage):
                 deci = self.gui.lis.lower()
                 if deci == "h":
                     self.gui.clear
-                    print(f"Username can't be {self.bold("admin")}\nUsername can't be {self.bold("already in use")}\nUsername can only be {self.bold("alphabetic")}")
+                    print(self.acc(f"Username can't be {self.bold("admin")}\nUsername can't be {self.bold("already in use")}\nUsername can only be {self.bold("alphabetic")}"))
                     self.gui.lis
                 break
             

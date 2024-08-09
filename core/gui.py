@@ -60,8 +60,10 @@ class Gui:
         os.system("cls") if self._is_win else os.system("clear")
 
     def ls(self, menu: list[dict[str, str]]):
+        print(self.color_settings['_ac'] + "-"*20 +self.color_settings['_fc'])
         for item in menu:
             print(f"{item["key"]}. {item["name"]}")
+        print(self.color_settings['_ac'] + "-"*20 +self.color_settings['_fc'])
 
 
     def styled(self, text, style):
