@@ -3,7 +3,6 @@ import os, tty, termios, sys
 class Color:
     default = {
         "_fc": '\033[37m',
-        "_bc": '\033[30m',
         "_ec": '\033[31m',
         "_cc": '\033[32m',
         "_ac": '\033[33m',
@@ -50,7 +49,6 @@ class Gui:
             ## default user selections
             cls.color_settings = {
                 "_fc": Color.colors["white"],
-                "_bc": Color.colors["bg_black"],
                 "_ec": Color.colors["red"],
                 "_cc": Color.colors["green"],
                 "_ac": Color.colors["yellow"]

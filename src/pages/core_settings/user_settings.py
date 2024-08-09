@@ -51,7 +51,7 @@ class UserSettings(BasePage):
             is_changed = Api().change_username(self.state.user.username, new_username)
             
             if not is_changed:
-                print(f"Couldn't change the username.\nEnter {self.bold("h")} to see potential reason")
+                print(self.err(f"Couldn't change the username.\nEnter {self.bold("h")} to see potential reason"))
                 deci = self.gui.lis.lower()
                 if deci == "h":
                     self.gui.clear

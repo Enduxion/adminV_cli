@@ -102,7 +102,28 @@ class ThemeSettings(BasePage):
                 break
                 
     def built_in_scheme(self):
-        pass
+        menu = ["Retro Arcade", "Cyberpunk Vibes", "Solar flare", "Digital Dawn", "Electric Pulse"]
+        while True:
+            self.gui.clear
+            for index, item in enumerate(menu):
+                print(f"{index + 1}. {item}")
+            
+            try:
+                dec = int(self.gui.lis.lower())
+            except Exception:
+                continue
+            
+            if dec > 0 and dec <= len(menu):
+                is_changed = Api().change_theme_config(self.state.user.username, menu[dec - 1])
+                if not is_changed:
+                    print(self.err("Some error occurred!"))
+                    self.gui.lis
+                    break
+                
+                self.gui.reparam(self.state.user_config)
+                print(self.corr("Successfully changed the scheme"))
+                self.gui.lis
+                break
     
     def run(self):
         while True:

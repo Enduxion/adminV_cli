@@ -263,3 +263,24 @@ class Api:
             return True
         except Exception:
             return False
+        
+    def change_theme_config(self, username, theme_name):
+        new_config = None
+        configs = None
+        
+        try:
+            with open(os.path.join(self._sys_path, "theme.json"), "r") as data_file:
+                print(f"Loading {theme_name}!")
+                configs = json.load(data_file)
+                print("Success...\nConfiguring Settings")
+                new_config = configs[theme_name.lower()]
+                new_config = { "colors": new_config }
+                print("Success...")
+            with open(os.path.join("disk", "usr", username, ".config"), "w") as data_file:
+                print("Saving data")
+                data_file.write(json.dumps(new_config))
+                print("Success...")
+        except Exception:
+            return False
+        return True
+    

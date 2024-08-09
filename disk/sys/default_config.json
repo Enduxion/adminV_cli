@@ -1,7 +1,6 @@
 {
     "colors": {
         "_fc": "white",
-        "_bc": "black",
         "_ec": "red",
         "_cc": "green",
         "_ac": "yellow"
