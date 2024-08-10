@@ -284,3 +284,5 @@ class Api:
             return False
         return True
     
+    def backup(self, username):
+        pass
