@@ -41,7 +41,7 @@ class AdminSettings(BasePage):
             new_retry_password = input(self.acc("Retry new user's password: "))
             
             if new_password != new_retry_password:
-                print({self.err("Passwords do not match")})
+                print(self.err("Passwords do not match"))
                 self.gui.lis
                 break
             

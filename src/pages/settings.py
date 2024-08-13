@@ -1,5 +1,5 @@
 from core.base_page import BasePage
-from src.pages.core_settings import user_settings, admin_settings, theme_settings
+from src.pages.core_settings import user_settings, admin_settings, theme_settings, disk_settings
 
 class Settings(BasePage):
     def __init__(self):
@@ -43,7 +43,7 @@ class Settings(BasePage):
                 # TODO: show logs
                 pass
             elif dec == "d":
-                # TODO: make disk settings
+                disk_settings.DiskSettings().run()
                 pass
             elif dec == "t":
                 theme_settings.ThemeSettings().run()

@@ -12,6 +12,11 @@ class Api:
         if cls._instance is None:
             cls._instance = super(Api, cls).__new__(cls)
             cls._sys_path = os.path.join("disk", "sys")
+            cls._default_dirs = (
+                "apps",
+                "backup",
+                "exp",
+            )
             cls._instance._key = cls.load_key()
             cls._instance._cypher_suite = Fernet(cls._instance._key)
         return cls._instance
@@ -123,21 +128,29 @@ class Api:
             json_enc_data = self._cypher_suite.encrypt(json.dumps(all_users).encode())
             print("Success...")
             
+            
             print("Saving data")
             with open(os.path.join(self._sys_path, "usrdata.dat"), 'wb') as data_file:
                 data_file.write(json_enc_data)
-            print("Success...")                
-                
+            print("Success...")
             file_path = os.path.join("disk", "usr", username)
             
-            print("making file dir")
+            print("Creating user folder")
             os.makedirs(file_path)
             print("Success...")
             
-            print("Condifguring user settings")
+            print("Creating folders")
+            for folder_dir in self._default_dirs:
+                print(f"Creating {folder_dir}")
+                os.makedirs(os.path.join(file_path, folder_dir))
+            print("Success...")
+            
+            print("Configuring user settings")
             os.system(f"cp {os.path.join("disk", "sys", "default_config.json")} {os.path.join(file_path, ".config")}")
             print("Success...")
         except Exception:
+            print("Couldn't complete the setup!\nReverting the changes")
+            self.remove_user(username)
             return False
         
         return True
@@ -286,3 +299,24 @@ class Api:
     
     def backup(self, username):
         pass
+    
+    def format_disk(self, username):
+        user_path = os.path.join("disk", "usr", username)
+        
+        try:
+            print("Removing apps")
+            os.system(f"rm -r {os.path.join(user_path, "apps")}")
+            print("Success...")
+            
+            print("Removing all files")
+            os.system(f"rm -r {os.path.join(user_path, "exp")}")
+            print("Success...")
+            
+            print("Changing the theme to default")
+            if self.reset_to_default(username):
+                print("Success...")
+            else:
+                raise Exception
+        except Exception:
+            return False
+        return True

@@ -45,7 +45,18 @@ class DiskSettings(BasePage):
             password = input("Password: ")
             if not Api().is_logged_in(self.state.user.username, password):
                 print(self.err("Passwords do not match"))
-                self.gui.
+                self.gui.lis
+                break
+            
+            is_removed = Api().format_disk(self.state.user.username)
+            if not is_removed:
+                print(self.err("Some error occurred"))
+                self.gui.lis
+                break
+            
+            print(self.corr("Formatted disk successfully"))
+            self.gui.lis
+            break
     def backup(self):
         pass
         
