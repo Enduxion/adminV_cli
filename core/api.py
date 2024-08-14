@@ -2,6 +2,7 @@ from cryptography.fernet import Fernet
 import os
 import json
 import re
+import time
 
 PATT = r'^[A-Za-z]+$'
 
@@ -297,8 +298,38 @@ class Api:
             return False
         return True
     
-    def backup(self, username):
-        pass
+    def backup(self, username, name):
+        user_path = os.path.join("disk", "usr", username)
+        
+        try:
+            print("Creating backup")
+            title = name + '_' + f"{round(time.time() * 100)}"
+            backup_dir = os.path.join(user_path, "backup", title)
+            
+            if os.path.isdir(backup_dir):
+                print(f"Backup already exists with the name {title}")
+                return False
+            
+            print("Creating directory")
+            os.makedirs(backup_dir)
+            print("Success....")
+            
+            print("Copying apps and explorer data")
+            os.system(f"cp -r {os.path.join(user_path, 'apps')} {os.path.join(user_path, 'exp')} {backup_dir}")
+            print("Success...\nCopying config")
+            os.system(f"cp {os.path.join(user_path, ".config")} {backup_dir}")
+            print("Success...")
+            
+            print(f"Made backup {title}")
+            
+        except Exception:
+            return False
+
+        return True
+    
+    def list_backup(self, username):
+        user_path = os.path.join("disk", "usr", username, "backup")
+        return os.listdir(user_path)            
     
     def format_disk(self, username):
         user_path = os.path.join("disk", "usr", username)
@@ -317,6 +348,88 @@ class Api:
                 print("Success...")
             else:
                 raise Exception
+            
+            print("Creating file exp and apps")
+            os.makedirs(os.path.join(user_path, "apps"))
+            os.makedirs(os.path.join(user_path, "exp"))
+            print("Success...")
         except Exception:
             return False
         return True
+    
+    def load_backup(self, username, name):
+        if name not in self.list_backup(username):
+            return False
+        
+        path = os.path.join("disk", "usr", username)
+        
+        try:
+            print("Removing existing files!")
+            os.system(f"rm -r {os.path.join(path, "apps")} {os.path.join(path, "exp")}")
+            print("Success...")
+            print("Removing the config")
+            os.system(f"rm {os.path.join(path, ".config")}")
+            print("Success\nReverting the changes")
+            os.system(f"cp -r {os.path.join(path, "backup", name, "apps")} {os.path.join(path, "backup", name, "exp")} {path}")
+            print("Success...\nConfiguring")
+            os.system(f"cp {os.path.join(path, "backup", name, ".config")} {path}")
+            print("Success...")
+        except Exception:
+            return False
+        return True
+    
+    def list_apps(self, username):
+        path = os.path.join("disk", "usr", username, "apps")
+        return os.listdir(path)
+    
+    def remove_app(self, username, name):
+        if name not in self.list_apps(username):
+            return False
+        
+        try:
+            os.system(f"rm {os.path.join("disk", "usr", username, "apps", name)}")
+        except Exception:
+            return False
+        
+        return True
+        
+    def install_app(self, username, path):
+        try:
+            print("Checking the file path")
+            if not os.path.isfile(path):
+                print("File not found\nMake sure the path is an absolute path!")
+                return False
+            print("Success...")
+            
+            print("Checking the file type")
+            if path[-4:].lower() != '.eux':
+                print("Not a valid type of file!")
+                return False
+            
+            print("Checking updates")
+            app_name = path.split('/')[-1]
+
+            for x in self.list_apps(username):
+                if app_name.lower() == x.lower():
+                    dec = input("App with same name was detected!\nDo you want to remove it and install the newer app?\nEnter 'y' to install or press any key to cancel\n").lower()
+                    
+                    if dec == 'y':
+                        print("Removing the previous installation")
+                        os.system(f"rm {os.path.join("disk", "usr", username, "apps", app_name)}")
+                        print("Success...")
+                        break
+                    else:
+                        print("Installation cancelled")
+                        return False
+            else:
+                print("Fresh installation detected!")
+                
+            print("Installing the app!")
+            os.system(f"cp {path} {os.path.join("disk", "usr", username, "apps")}")
+            print("Success...")
+            
+            print(f"App successfully installed with app name {app_name}!")
+        except Exception:
+            return False
+        return True
+            
