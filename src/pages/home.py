@@ -1,5 +1,6 @@
 from core.base_page import BasePage
 from src.pages.settings import Settings
+from src.pages.apps import Apps
 class Home(BasePage):
     def __init__(self):
         super().__init__()
@@ -43,4 +44,4 @@ class Home(BasePage):
             elif dec == "s":
                 Settings().run()
             elif dec == "a":
-                pass
+                Apps().run()
