@@ -82,6 +82,7 @@ class Gui:
         try:
             tty.setraw(sys.stdin.fileno())
             ch = sys.stdin.read(1)
+            if ch == '\x1b': return ''
         finally:
             termios.tcsetattr(sys.stdin, termios.TCSADRAIN, old_settings)
         return ch
@@ -95,8 +96,12 @@ class Gui:
         
     def print_table(self, data: list[tuple[str, bool]], headers: tuple[str, str]):
         data = [(username, "admin" if admin else "non-admin") for username, admin in data]
+        self.print_grid(data, headers)
+            
+    def print_grid(self, data, headers):
         column_widths = [max(len(str(item[i])) for item in data + [headers]) for i in range(len(headers))]
         row_format = "  ".join([f"{{:<{width}}}" for width in column_widths])
+        headers = (self.styled(header, "bold") for header in headers)
         print(row_format.format(*headers))
         print("  ".join(["-" * width for width in column_widths]))
         for row in data:

@@ -1,6 +1,7 @@
 from core.base_page import BasePage
 from core.api import Api
 from src.pages.core_apps.text_editor import TextEditor
+from src.pages.core_apps.exp import Exp
 
 class Apps(BasePage):
     def __init__(self):
@@ -22,8 +23,10 @@ class Apps(BasePage):
                 break
             elif app_name.lower() == '/te':
                 TextEditor().run()
+                break
             elif app_name.lower() == '/exp':
-                pass
+                Exp().run()
+                break
                 
             
             if app_name not in self.menu_items:
