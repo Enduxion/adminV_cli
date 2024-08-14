@@ -58,6 +58,7 @@ class AdminSettings(BasePage):
             is_added = Api().add_user(new_username, new_password, new_is_admin)
             
             if not is_added:
+                self.log(f"{self.state.user.username} couldn't add user {new_username}", "ERROR")
                 print(self.err(f"Failed to add new user\nEnter {self.bold("h")} to see the potential reasons."))
                 dec3 = self.gui.lis.lower()
                 if dec3 == 'h':
@@ -108,6 +109,7 @@ class AdminSettings(BasePage):
             is_removed = Api().remove_user(new_username)
             
             if not is_removed:
+                self.log(f"{self.state.user.username} couldn't remove user {new_username}", "ERROR")
                 print(self.err(f"Some error occurred while removing user {new_username}"))
                 self.gui.lis
                 break
@@ -154,6 +156,7 @@ class AdminSettings(BasePage):
             is_changed = Api().change_permission(new_username)
             
             if not is_changed:
+                self.log(f"{self.state.user.username} couldn't change the permission of {new_username}", "ERROR")
                 print(self.err(f"Couldn't change the permission of {self.bold(new_username)}"))
                 self.gui.lis
                 break

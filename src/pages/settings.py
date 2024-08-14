@@ -1,5 +1,6 @@
 from core.base_page import BasePage
 from src.pages.core_settings import user_settings, admin_settings, theme_settings, disk_settings
+from core.api import Api
 
 class Settings(BasePage):
     def __init__(self):
@@ -40,14 +41,14 @@ class Settings(BasePage):
             if dec == "b":
                 break
             elif dec == "l":
-                # TODO: show logs
-                pass
+                self.gui.clear
+                Api().cat_log(self.state.user.username)
+                self.gui.lis
+                continue
             elif dec == "d":
                 disk_settings.DiskSettings().run()
-                pass
             elif dec == "t":
                 theme_settings.ThemeSettings().run()
-                pass
             elif dec == "a":
                 admin_settings.AdminSettings().run()
             elif dec == "u":

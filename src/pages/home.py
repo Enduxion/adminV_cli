@@ -35,9 +35,10 @@ class Home(BasePage):
             if dec == "q":
                 return False
             elif dec == "l":
+                self.loginfo(f"{self.state.user.username} logged out")
                 return True
             elif dec == "r":
-                # TODO: make restart
+                self.loginfo(f"{self.state.user.username} restarted the computer")
                 pass
             elif dec == "s":
                 Settings().run()

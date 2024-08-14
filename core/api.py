@@ -1,4 +1,5 @@
 from cryptography.fernet import Fernet
+from core.log import Log
 import os
 import json
 import re
@@ -13,6 +14,7 @@ class Api:
         if cls._instance is None:
             cls._instance = super(Api, cls).__new__(cls)
             cls._sys_path = os.path.join("disk", "sys")
+            cls.log = Log().log
             cls._default_dirs = (
                 "apps",
                 "backup",
@@ -24,29 +26,35 @@ class Api:
     
     @classmethod
     def load_key(cls):
+        cls.log("Loading key")
         try:
             with open(os.path.join(cls._sys_path, "vars.dat"), "rb") as key_file:
                 key = key_file.read().strip()
+                cls.log("Loaded key successfully")
                 return key
         except Exception as e:
+            cls.log("Error key couldn't load", "ERROR")
             raise RuntimeError("Failed to load encryption key.") from e
 
     def load_user_data(self):
         try:
             with open(os.path.join(self._sys_path, "usrdata.dat"), 'rb') as usrdata_file:
                 encrypted_data = usrdata_file.read()
-
+            
             decrypted_data = self._cypher_suite.decrypt(encrypted_data).decode()
             user_data = json.loads(decrypted_data)
             return user_data
         except Exception as e:
+            self.log("Failed to load or decrypt user data", "ERROR")
             raise RuntimeError("Failed to load or decrypt user data.") from e
 
     def is_logged_in(self, username, password):
         user_data = self.load_user_data()
         if username in user_data:
             if password == user_data[username]["password"]:
+                self.log(f"Successfully verified user {username}")
                 return { "username": username, "is_admin": user_data[username]["is_admin"] }
+        self.log(f"Unsuccessfull attempt at logging in as {username}")
         return None
     
     def all_users(self):
@@ -86,7 +94,8 @@ class Api:
             os.rename(os.path.join(usr_path, username), os.path.join(usr_path, new_username))
         except Exception:
             return False
-
+        
+        self.log(f"{username} changed username to {new_username}")
         return True
     
     def change_password(self, username, new_password):
@@ -105,6 +114,7 @@ class Api:
         except Exception:
             return False
             
+        self.log(f"{username} changed their password")
         return True
     
     def add_user(self, username, password, is_admin):
@@ -154,6 +164,7 @@ class Api:
             self.remove_user(username)
             return False
         
+        self.log(f"A new user with username={username} added with permission admin={is_admin}")
         return True
         
     def remove_user(self, username):
@@ -198,6 +209,7 @@ class Api:
         except Exception:
             return False
         
+        self.log(f"Removed user {username}")
         return True
     
     def change_permission(self, username):
@@ -232,6 +244,7 @@ class Api:
         except Exception:
             return False
         
+        self.log(f"Changed permission of {username} to admin={all_users[username]["is_admin"]}")
         return True
     
     def reset_to_default(self, username):
@@ -325,6 +338,7 @@ class Api:
         except Exception:
             return False
 
+        self.log(f"{username} created a backup named {title}")
         return True
     
     def list_backup(self, username):
@@ -355,6 +369,8 @@ class Api:
             print("Success...")
         except Exception:
             return False
+        
+        self.log(f"{username} formatted their disk")
         return True
     
     def load_backup(self, username, name):
@@ -376,6 +392,8 @@ class Api:
             print("Success...")
         except Exception:
             return False
+        
+        self.log(f"{username} loaded backup with name {name}")
         return True
     
     def list_apps(self, username):
@@ -432,4 +450,9 @@ class Api:
         except Exception:
             return False
         return True
-            
+        
+    def cat_log(self, username):
+        self.log(f"{username} accessed log file")
+        with open("./disk/log/__sys.log", "r") as log_file:
+            print(log_file.read())
+         

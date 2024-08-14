@@ -51,6 +51,7 @@ class UserSettings(BasePage):
             is_changed = Api().change_username(self.state.user.username, new_username)
             
             if not is_changed:
+                self.log(f"{self.state.user.username} couldn't change their username", "ERROR")
                 print(self.err(f"Couldn't change the username.\nEnter {self.bold("h")} to see potential reason"))
                 deci = self.gui.lis.lower()
                 if deci == "h":
@@ -92,6 +93,7 @@ class UserSettings(BasePage):
             is_changed = Api().change_password(self.state.user.username, new_password)
             
             if not is_changed:
+                self.log(f"{self.state.user.username} couldn't change their password", "ERROR")
                 print(f"{self.err("Couldn't change the password!")}")
                 self.gui.lis
                 break
