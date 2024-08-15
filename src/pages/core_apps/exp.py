@@ -1,5 +1,7 @@
 from core.base_page import BasePage
-import os
+import os, re
+
+PATT = r'^[A-Za-z._-]+$'
 
 class Exp(BasePage):
     def __init__(self):
@@ -75,6 +77,16 @@ class Exp(BasePage):
             print(self.err("Multifolder system not allowed"))
             self.gui.lis
             return True
+        
+        if len(command) == 0:
+            print(self.err("No args passed"))
+            self.gui.lis
+            return True
+        
+        if not re.match(PATT, command):
+            print(self.err("Invalid name of the file or folder"))
+            self.gui.lis
+            return True
         return False
         
     def nav(self, command: str):
@@ -118,7 +130,7 @@ class Exp(BasePage):
             return
         
         if os.path.isdir(os.path.join(self.current, command)) or os.path.isfile(os.path.join(self.current, command)):
-            print(self.err("File/Folder with the name {command} already exists"))
+            print(self.err(f"File/Folder with the name {command} already exists"))
             self.gui.lis
             return
         
@@ -160,7 +172,7 @@ class Exp(BasePage):
             return
         
         if os.path.isdir(os.path.join(self.current, command)) or os.path.isfile(os.path.join(self.current, command)):
-            print(self.err("File/Folder with the name {command} already exists"))
+            print(self.err(f"File/Folder with the name {command} already exists"))
             self.gui.lis
             return
         
@@ -194,6 +206,24 @@ class Exp(BasePage):
             print(self.err(f"Can't remove file: {command}"))
             self.gui.lis
     
+    def show(self, command: str):
+        command = command[4:].strip()
+        if self.is_multi(command):
+            return
+        
+        if not os.path.isfile(os.path.join(self.current, command)):
+            print(self.err(f"{command} file not found"))
+            self.gui.lis
+            return
+        
+        try:
+            with open(os.path.join(self.current, command), "r") as file_to_read:
+                print(file_to_read.read())
+        except Exception:
+            print(self.err(f"There was a problem reading file: {command}"))
+        
+        self.gui.lis
+    
     def command_mode(self): 
         command = input(self.bold(self.acc("(command > "))).strip()
         command_slices = command.split(" ")
@@ -210,5 +240,50 @@ class Exp(BasePage):
             self.mfile(command)
         elif cs == 'rfile':
             self.rfile(command)
+        elif cs == 'show':
+            self.show(command)
+        elif cs == '~' or cs == '/':
+            self.current = self.main_path
+        elif cs == 'help':
+            menu = [
+                {
+                    "name": "Navigate the exp",
+                    "key": "nav <dir_name>"
+                },
+                {
+                    "name": "make dir in the current folder",
+                    "key": "mdir <dir_name>"
+                },
+                {
+                    "name": "remove dir in the current folder",
+                    "key": "rdir <dir_name>"
+                },
+                {
+                    "name": "make file in the current folder",
+                    "key": "mfile <file_name>"
+                },
+                {
+                    "name": "remove file in the current folder",
+                    "key": "rfile <dir_name>"
+                },
+                {
+                    "name": "displays the content of the file",
+                    "key": "show <file_name>"
+                },
+                {
+                    "name": "exit command mode",
+                    "key": "exit"
+                },
+                {
+                    "name": "show list of commands",
+                    "key": "help"
+                }
+            ]
+            self.gui.ls(menu)
+            self.gui.lis
+        else:
+            print(self.err(f"{self.bold(command)} not a command"))
+            self.gui.lis
+            
         
         
