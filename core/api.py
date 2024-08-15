@@ -4,6 +4,7 @@ import os
 import json
 import re
 import time
+import subprocess
 
 PATT = r'^[A-Za-z]+$'
 
@@ -455,4 +456,8 @@ class Api:
         self.log(f"{username} accessed log file")
         with open("./disk/log/__sys.log", "r") as log_file:
             print(log_file.read())
-         
+    
+    def launch_app(self, username, app_name):
+        load_app = f"{os.path.join("disk", "usr", username, "apps", app_name)}"
+        print("Loading app...", load_app)
+        subprocess.run(load_app)

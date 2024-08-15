@@ -47,7 +47,15 @@ class TextEditor(BasePage):
             #update
             new_text = self.gui.lis
             if new_text == '\x18': # CTRL + X
-                break
+                while True:
+                    self.gui.clear
+                    print("Do you want to quit without saving the file? (y/n)")
+                    dec2 = self.gui.lis.lower()
+                    if dec2 == 'n':
+                        break
+                    elif dec2 == 'y':
+                        return
+                    
             elif new_text == '\x13': # CTRL + S
                 pass # Saving logic
             elif new_text == '\x12': # CTRL + R
