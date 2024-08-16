@@ -102,7 +102,10 @@ class ThemeSettings(BasePage):
                 break
                 
     def built_in_scheme(self):
-        menu = ["Retro Arcade", "Cyberpunk Vibes", "Solar flare", "Digital Dawn", "Electric Pulse"]
+        menu = []
+        with open("disk/sys/theme.json", "r") as file_data:
+            import json
+            menu = list(json.load(file_data).keys())
         while True:
             self.gui.clear
             for index, item in enumerate(menu):

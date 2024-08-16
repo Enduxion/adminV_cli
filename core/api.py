@@ -26,16 +26,49 @@ class Api:
         return cls._instance
     
     @classmethod
+    def generate_key(cls):
+        try:
+            key = Fernet.generate_key()
+            print("Key generated")
+            with open(os.path.join(cls._sys_path, "vars.dat"), "wb") as key_file:
+                key_file.write(key)
+                print("Key saved")
+        except Exception:
+            print("Key couldn't be generated")
+            exit(0)
+    
+    @classmethod
     def load_key(cls):
         cls.log("Loading key")
         try:
             with open(os.path.join(cls._sys_path, "vars.dat"), "rb") as key_file:
                 key = key_file.read().strip()
+                if len(key) < 32:
+                    cls.generate_key()
+                    cls.load_key()
                 cls.log("Loaded key successfully")
                 return key
         except Exception as e:
             cls.log("Error key couldn't load", "ERROR")
             raise RuntimeError("Failed to load encryption key.") from e
+
+    @classmethod
+    def remove_all(cls):
+        print("Removing usrs")
+        if os.path.isdir("disk/usr"):
+            os.system("rm -r disk/usr")
+            
+        print("Success...\nRemoving logs")
+        if len(os.listdir("disk/log")) > 0:
+            os.system("rm disk/log/*")
+            
+        
+        
+    @classmethod
+    def create_folders(cls):
+        print("Creating usr folder")
+        os.mkdir("disk/usr")
+        print("Success...")
 
     def load_user_data(self):
         try:
@@ -47,7 +80,7 @@ class Api:
             return user_data
         except Exception as e:
             self.log("Failed to load or decrypt user data", "ERROR")
-            raise RuntimeError("Failed to load or decrypt user data.") from e
+            return {}
 
     def is_logged_in(self, username, password):
         user_data = self.load_user_data()
@@ -445,6 +478,8 @@ class Api:
                 
             print("Installing the app!")
             os.system(f"cp {path} {os.path.join("disk", "usr", username, "apps")}")
+            print("Success...\nBurning it to executable")
+            os.system(f"chmod +x {os.path.join("disk", "usr", username, "apps", app_name)}")
             print("Success...")
             
             print(f"App successfully installed with app name {app_name}!")
