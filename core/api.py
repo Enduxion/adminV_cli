@@ -43,9 +43,9 @@ class Api:
         try:
             with open(os.path.join(cls._sys_path, "vars.dat"), "rb") as key_file:
                 key = key_file.read().strip()
-                if len(key) < 32:
+                if len(key) != 44:
                     cls.generate_key()
-                    cls.load_key()
+                    key = cls.load_key()
                 cls.log("Loaded key successfully")
                 return key
         except Exception as e:
@@ -62,8 +62,6 @@ class Api:
         if len(os.listdir("disk/log")) > 0:
             os.system("rm disk/log/*")
             
-        
-        
     @classmethod
     def create_folders(cls):
         print("Creating usr folder")
@@ -193,6 +191,19 @@ class Api:
             print("Configuring user settings")
             os.system(f"cp {os.path.join("disk", "sys", "default_config.json")} {os.path.join(file_path, ".config")}")
             print("Success...")
+            
+            print("Boot user adding")
+            d = {}
+            with open("disk/boot/.dat", "r") as bf:
+                d = json.load(bf)
+            
+            d["users"] = d["users"] + 1
+            
+            with open("disk/boot/.dat", "w") as bf_:
+                bf_.write(json.dumps(d))
+                
+            print("Success...")
+            
         except Exception:
             print("Couldn't complete the setup!\nReverting the changes")
             self.remove_user(username)
@@ -240,6 +251,18 @@ class Api:
             print("Removing the data")
             os.system(f"rm -r {file_path}")
             print("Success...")
+            
+            print("Boot user removing")
+            
+            d = {}
+            with open("disk/boot/.dat", "r") as bf:
+                d = json.load(bf)
+            d["users"] = d["users"] - 1
+            with open("disk/boot/.dat", "w") as bf_:
+                bf_.write(json.dumps(d))
+                
+            print("Success...")
+            
         except Exception:
             return False
         

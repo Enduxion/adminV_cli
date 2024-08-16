@@ -48,16 +48,16 @@ class ThemeSettings(BasePage):
                 "name": "Foreground Color"
             },
             {
-                "key": "A",
-                "name": "Accent Color"
+                "key": self.acc("A"),
+                "name": self.acc("Accent Color")
             },
             {
-                "key": "E",
-                "name": "Error Color"
+                "key": self.err("E"),
+                "name": self.err("Error Color")
             },
             {
-                "key": "C",
-                "name": "Correct Color"
+                "key": self.corr("C"),
+                "name": self.corr("Correct Color")
             },
             {
                 "key": "B",
