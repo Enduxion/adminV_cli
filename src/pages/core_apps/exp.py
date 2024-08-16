@@ -1,13 +1,14 @@
 from core.base_page import BasePage
 import os, re
 
-PATT = r'^[A-Za-z._-]+$'
+PATT = r'^[A-Za-z0-9._-]+$'
 
 class Exp(BasePage):
     def __init__(self):
         super().__init__()
         self.main_path = os.path.join("disk", "usr", self.state.user.username, "exp")
-        if not os.path.isdir(self.main_path):            os.makedirs(self.main_path)
+        if not os.path.isdir(self.main_path):
+            os.makedirs(self.main_path)
         self.current = self.main_path
         self.current_items : list[tuple] = []
         self.set_current_items()
@@ -21,7 +22,7 @@ class Exp(BasePage):
                 "folder" if os.path.isdir(os.path.join(self.current, item)) else "file"
             ))        
     
-    def run(self):
+    def run(self, is_select=False, isFile=True):
         menu = [
             {
                 "name": "Command mode",
@@ -69,8 +70,14 @@ class Exp(BasePage):
                 self.command_mode_activated = not self.command_mode_activated
                 continue
             
-            if self.command_mode_activated:
+            if self.command_mode_activated and not is_select:
                 self.command_mode()
+            elif self.command_mode_activated and is_select:
+                path = self.command_mode(True, isFile)
+                if path is None:
+                    continue
+                if os.path.isdir(path) or os.path.isfile(path):
+                    return path
             
     def is_multi(self, command):
         if command.find('/') != -1 or command.find('\\') != -1:
@@ -224,7 +231,7 @@ class Exp(BasePage):
         
         self.gui.lis
     
-    def command_mode(self): 
+    def command_mode(self, is_select=False, isFile=True): 
         command = input(self.bold(self.acc("(command > "))).strip()
         command_slices = command.split(" ")
         cs = command_slices[0].lower()
@@ -244,6 +251,8 @@ class Exp(BasePage):
             self.show(command)
         elif cs == '~' or cs == '/':
             self.current = self.main_path
+        elif cs == 'sel':
+            return self.select(command, isFile, is_select)
         elif cs == 'help':
             menu = [
                 {
@@ -271,6 +280,10 @@ class Exp(BasePage):
                     "key": "show <file_name>"
                 },
                 {
+                    "name": "Select a file/folder (gives an app, the path of the file/folder)",
+                    "key": "sel <name>" 
+                },
+                {
                     "name": "exit command mode",
                     "key": "exit"
                 },
@@ -285,5 +298,22 @@ class Exp(BasePage):
             print(self.err(f"{self.bold(command)} not a command"))
             self.gui.lis
             
+    def select(self, command:str, isFile=True, is_select=False):
+        command = command[3:].strip()
+        if self.is_multi(command):
+            return None
         
+        if command in os.listdir(os.path.join(self.current)):
+            if not (os.path.isfile(os.path.join(self.current, command)) ^ isFile):
+                if is_select:
+                    return os.path.join(self.current, command)
+                else:
+                    print(os.path.join(self.current, command))
+            else:
+                print(self.err(f"Should select a {"file" if isFile else "folder"}"))
+        else:
+            print(self.err(f"No file/folder by the name of: {command}"))
+            
+        self.gui.lis
+        return None
         
