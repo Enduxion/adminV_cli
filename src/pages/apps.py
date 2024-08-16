@@ -6,12 +6,13 @@ from src.pages.core_apps.exp import Exp
 class Apps(BasePage):
     def __init__(self):
         super().__init__()
-        self.menu_items = ['/te (Text Editor)', '/exp (Explorer)'] + Api().list_apps(self.state.user.username)
+        self.menu_items = [self.acc('~te (Text Editor)'), self.acc('~exp (Explorer)')] + Api().list_apps(self.state.user.username)
         
     def run(self):
         while True:
             self.gui.clear
-            print(f"Enter {self.bold('/q')} to exit")
+            print(self.acc(self.bold("EXPLORER")))
+            print(f"\nEnter {self.bold('~q')} to exit\n")
             print(self.acc("-"*20))
             for x in self.menu_items:
                 print(x)
@@ -19,21 +20,21 @@ class Apps(BasePage):
             
             app_name = input("Enter the name of the app: ")
             
-            if app_name.lower() == '/q':
+            if app_name.lower() == '~q':
                 break
-            elif app_name.lower() == '/te':
+            elif app_name.lower() == '~te':
                 TextEditor().run()
-                break
-            elif app_name.lower() == '/exp':
+                continue
+            elif app_name.lower() == '~exp':
                 Exp().run()
-                break
+                continue
                 
-            
             if app_name not in self.menu_items:
                 print(self.err(f"No app by the name of {app_name}"))
                 self.gui.lis
                 continue
             
+            self.gui.clear
             app_loaded = Api().launch_app(self.state.user.username, app_name)
             
             if not app_loaded:

@@ -1,5 +1,5 @@
 from cryptography.fernet import Fernet
-from core.log import Log
+from core.log import Log, TODAYS_DATE
 import os
 import json
 import re
@@ -454,10 +454,14 @@ class Api:
         
     def cat_log(self, username):
         self.log(f"{username} accessed log file")
-        with open("./disk/log/__sys.log", "r") as log_file:
+        with open(f"./disk/log/__sys-{TODAYS_DATE}.log", "r") as log_file:
             print(log_file.read())
     
     def launch_app(self, username, app_name):
         load_app = f"{os.path.join("disk", "usr", username, "apps", app_name)}"
-        print("Loading app...", load_app)
-        subprocess.run(load_app)
+        try:
+            subprocess.run(load_app)
+        except Exception:
+            return False
+
+        return True
