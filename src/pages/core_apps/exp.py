@@ -22,7 +22,7 @@ class Exp(BasePage):
                 "folder" if os.path.isdir(os.path.join(self.current, item)) else "file"
             ))        
     
-    def run(self, is_select=False, isFile=True):
+    def run(self, is_select=False, isFile=True, can_new=False):
         menu = [
             {
                 "name": "Command mode",
@@ -73,10 +73,10 @@ class Exp(BasePage):
             if self.command_mode_activated and not is_select:
                 self.command_mode()
             elif self.command_mode_activated and is_select:
-                path = self.command_mode(True, isFile)
+                path = self.command_mode(True, isFile, can_new)
                 if path is None:
                     continue
-                if os.path.isdir(path) or os.path.isfile(path):
+                if os.path.isdir(path) or os.path.isfile(path) or can_new:
                     return path
             
     def is_multi(self, command):
@@ -231,7 +231,7 @@ class Exp(BasePage):
         
         self.gui.lis
     
-    def command_mode(self, is_select=False, isFile=True): 
+    def command_mode(self, is_select=False, isFile=True, can_new=False): 
         command = input(self.bold(self.acc("(command > "))).strip()
         command_slices = command.split(" ")
         cs = command_slices[0].lower()
@@ -252,7 +252,7 @@ class Exp(BasePage):
         elif cs == '~' or cs == '/':
             self.current = self.main_path
         elif cs == 'sel':
-            return self.select(command, isFile, is_select)
+            return self.select(command, isFile, is_select, can_new)
         elif cs == 'help':
             menu = [
                 {
@@ -298,12 +298,12 @@ class Exp(BasePage):
             print(self.err(f"{self.bold(command)} not a command"))
             self.gui.lis
             
-    def select(self, command:str, isFile=True, is_select=False):
+    def select(self, command:str, isFile=True, is_select=False, can_new=False):
         command = command[3:].strip()
         if self.is_multi(command):
             return None
         
-        if command in os.listdir(os.path.join(self.current)):
+        if command in os.listdir(os.path.join(self.current)) and not can_new:
             if not (os.path.isfile(os.path.join(self.current, command)) ^ isFile):
                 if is_select:
                     return os.path.join(self.current, command)
@@ -311,9 +311,13 @@ class Exp(BasePage):
                     print(os.path.join(self.current, command))
             else:
                 print(self.err(f"Should select a {"file" if isFile else "folder"}"))
+        elif can_new:
+            return os.path.join(self.current, command)
+        
         else:
             print(self.err(f"No file/folder by the name of: {command}"))
             
         self.gui.lis
         return None
+    
         
