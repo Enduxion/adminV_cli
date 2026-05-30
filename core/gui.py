@@ -95,7 +95,7 @@ class Gui:
         print(self.color_settings['_fc'])
         
     def print_table(self, data: list[tuple[str, bool]], headers: tuple[str, str]):
-        data = [(username, "admin" if admin else "non-admin") for username, admin in data]
+        data = [(username, "admin" if admin else "non-admin") for username, admin in data] # type: ignore
         self.print_grid(data, headers)
             
     def print_grid(self, data, headers):

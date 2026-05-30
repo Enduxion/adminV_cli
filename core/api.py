@@ -10,6 +10,10 @@ PATT = r'^[A-Za-z]+$'
 
 class Api:
     _instance = None
+    
+    def __init__(self):
+        self._key: bytes
+        self._cypher_suite: Fernet
 
     def __new__(cls):
         if cls._instance is None:
